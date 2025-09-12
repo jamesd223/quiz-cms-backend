@@ -374,6 +374,17 @@ export function buildOpenAPIDocument(baseUrl = "http://localhost:3000"): any {
   });
   registry.registerPath({
     method: "get",
+    path: "/v1/versions/{id}",
+    summary: "Get version by id",
+    security: authed,
+    request: { params: z.object({ id: z.string() }) },
+    responses: {
+      200: { description: "OK" },
+      404: { description: "Not Found" },
+    },
+  });
+  registry.registerPath({
+    method: "get",
     path: "/v1/versions/quiz/{quizId}",
     summary: "List versions by quiz",
     security: authed,
@@ -410,6 +421,17 @@ export function buildOpenAPIDocument(baseUrl = "http://localhost:3000"): any {
     responses: { 200: { description: "OK" } },
   });
   registry.registerPath({
+    method: "get",
+    path: "/v1/steps/{id}",
+    summary: "Get step by id",
+    security: authed,
+    request: { params: z.object({ id: z.string() }) },
+    responses: {
+      200: { description: "OK" },
+      404: { description: "Not Found" },
+    },
+  });
+  registry.registerPath({
     method: "delete",
     path: "/v1/steps/{id}",
     summary: "Delete step",
@@ -426,6 +448,17 @@ export function buildOpenAPIDocument(baseUrl = "http://localhost:3000"): any {
     security: authed,
     request: { params: z.object({ stepId: z.string() }) },
     responses: { 200: { description: "OK" } },
+  });
+  registry.registerPath({
+    method: "get",
+    path: "/v1/fields/{id}",
+    summary: "Get field by id",
+    security: authed,
+    request: { params: z.object({ id: z.string() }) },
+    responses: {
+      200: { description: "OK" },
+      404: { description: "Not Found" },
+    },
   });
   registry.registerPath({
     method: "post",

@@ -4,6 +4,7 @@ import { StepModel } from "../models/Step.js";
 import { validate } from "../middleware/validate.js";
 import { z } from "zod";
 import { requireAuth, requireRole } from "../middleware/auth.js";
+import { objectId } from "../validators/index.js";
 
 export const stepsRouter: RouterType = Router();
 
@@ -34,6 +35,23 @@ stepsRouter.get(
         .sort({ order_index: 1 })
         .lean();
       res.json({ items });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// Get single step by id
+stepsRouter.get(
+  "/:id",
+  requireAuth,
+  requireRole(["admin", "editor", "viewer"]),
+  validate({ params: z.object({ id: objectId }) }),
+  async (req, res, next) => {
+    try {
+      const step = await StepModel.findById(req.params.id).lean();
+      if (!step) return res.status(404).json({ error: "not_found" });
+      res.json({ step });
     } catch (err) {
       next(err);
     }

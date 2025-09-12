@@ -6,6 +6,7 @@ import { validate } from "../middleware/validate.js";
 import { z } from "zod";
 import { requireAuth, requireRole } from "../middleware/auth.js";
 import strongEtagForJson from "../utils/etag.js";
+import { objectId } from "../validators/index.js";
 
 export const versionsRouter: RouterType = Router();
 
@@ -35,7 +36,7 @@ versionsRouter.patch(
   "/:id",
   requireAuth,
   requireRole(["admin", "editor"]),
-  validate({ body: bodySchema.partial() }),
+  validate({ params: z.object({ id: objectId }), body: bodySchema.partial() }),
   async (req, res, next) => {
     try {
       const updated = await QuizVersionModel.findByIdAndUpdate(
@@ -61,6 +62,23 @@ versionsRouter.get(
         quiz_id: req.params.quizId,
       }).lean();
       res.json({ items });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// Get single version by id
+versionsRouter.get(
+  "/:id",
+  requireAuth,
+  requireRole(["admin", "editor", "viewer"]),
+  validate({ params: z.object({ id: objectId }) }),
+  async (req, res, next) => {
+    try {
+      const version = await QuizVersionModel.findById(req.params.id).lean();
+      if (!version) return res.status(404).json({ error: "not_found" });
+      res.json({ version });
     } catch (err) {
       next(err);
     }

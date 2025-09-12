@@ -88,7 +88,13 @@ quizzesRouter.post(
   async (req, res, next) => {
     try {
       const created = await QuizModel.create(req.body);
-      res.status(201).json({ quiz: created });
+      const version = await QuizVersionModel.create({
+        quiz_id: created._id,
+        label: "v1",
+        traffic_weight: 100,
+        is_default: true,
+      });
+      res.status(201).json({ quiz: created, version });
     } catch (err) {
       next(err);
     }
